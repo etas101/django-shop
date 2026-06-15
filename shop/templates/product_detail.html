@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ product.name }}</title>
+    <style>
+    /* Подключаем современный шрифт */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+    body { 
+        font-family: 'Inter', sans-serif; 
+        margin: 0; 
+        padding: 40px 20px; 
+        background: #f8fafc;
+        color: #1e293b;
+    }
+
+    .container { 
+        max-width: 1000px; 
+        margin: 0 auto; 
+        background: white; 
+        padding: 40px; 
+        border-radius: 20px;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+    }
+
+    .back-link { 
+        display: inline-flex;
+        align-items: center;
+        margin-bottom: 30px; 
+        color: #64748b; 
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s;
+    }
+
+    .back-link:hover { color: #0f172a; }
+
+    /* Главная сетка: на десктопе 2 колонки, на мобилке 1 */
+    .product-detail {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+        align-items: start;
+    }
+
+    .product-image img { 
+        width: 100%; 
+        aspect-ratio: 1/1; /* Квадратное фото */
+        object-fit: cover;
+        border-radius: 16px; 
+        box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+    }
+
+    .product-info h1 { font-size: 2.5rem; margin: 0 0 20px; color: #0f172a; }
+
+    .meta { 
+        background: #f1f5f9;
+        padding: 20px;
+        border-radius: 12px;
+        border-top: none;
+        border-bottom: none;
+        margin-bottom: 20px;
+    }
+
+    .price { 
+        color: #059669; 
+        font-size: 2.5rem; 
+        font-weight: 700;
+        margin: 20px 0;
+    }
+
+    .btn-add { 
+        display: block; 
+        width: 100%; 
+        padding: 18px; 
+        background: #0f172a; /* Темная стильная кнопка */
+        color: white; 
+        text-decoration: none; 
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        text-align: center; 
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .btn-add:hover { 
+        background: #334155; 
+        transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+        .product-detail { grid-template-columns: 1fr; gap: 30px; }
+        .product-info h1 { font-size: 1.8rem; }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <a href="{% url 'shop:catalog' %}" class="back-link">
+        ← Назад к каталогу
+    </a>
+
+    <div class="product-detail">
+
+        <!-- 📸 фото -->
+        <div class="product-image">
+            {% if product.photo %}
+                <img src="{{ product.photo.url }}" alt="{{ product.name }}">
+            {% else %}
+                <p>Нет изображения</p>
+            {% endif %}
+        </div>
+
+        <!-- 📦 инфо -->
+        <div class="product-info">
+
+            <h1>{{ product.name }}</h1>
+
+            <div class="meta">
+                <p><strong>Категория:</strong> {{ product.category.name }}</p>
+                <p><strong>Производитель:</strong> {{ product.manufacturer.name }} ({{ product.manufacturer.country }})</p>
+            </div>
+
+            <div class="price">{{ product.price }} ₽</div>
+
+            <div class="stock">✓ На складе: {{ product.stock }} шт.</div>
+
+            <div class="description">
+                <h3>Описание:</h3>
+                <p>{{ product.description }}</p>
+            </div>
+
+            <a href="{% url 'shop:add_to_cart' product.id %}" class="btn-add">
+                🛒 Добавить в корзину
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
