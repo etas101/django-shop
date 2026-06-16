@@ -17,7 +17,6 @@
         }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-dark); color: #fff; }
         
-        /* Шапка с золотым акцентом */
         .navbar { 
             background: rgba(15, 10, 21, 0.9) !important; 
             backdrop-filter: blur(15px); 
@@ -28,12 +27,10 @@
         .nav-link { font-weight: 500; color: #d1d1d1 !important; transition: 0.3s; }
         .nav-link:hover { color: var(--gold) !important; }
         
-        /* Кнопки "Золотой стиль" */
-        .btn { border-radius: 20px !important; font-weight: 600; padding: 0.6rem 1.5rem; transition: 0.3s; }
+        .btn { border-radius: 20px !important; font-weight: 600; padding: 0.6rem 1.2rem; transition: 0.3s; }
         .btn-outline-gold { border: 2px solid var(--gold); color: var(--gold); }
         .btn-outline-gold:hover { background: var(--gold); color: #000; }
         
-        /* Мягкие карточки */
         .card { 
             border-radius: 30px !important; 
             border: 1px solid rgba(212, 175, 55, 0.2); 
@@ -56,19 +53,21 @@
             <div class="collapse navbar-collapse" id="mainNav">
                 <ul class="navbar-nav mx-auto">
                     <li class="nav-item"><a class="nav-link" href="{% url 'shop:home' %}">ГЛАВНАЯ</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'shop:catalog' %}">СЕРТИФИКАТЫ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'shop:product_list' %}">СЕРТИФИКАТЫ</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'shop:cart' %}">КОРЗИНА</a></li>
                 </ul>
                 
-                <div class="d-flex align-items-center">
+                <div class="d-flex align-items-center gap-2">
                     {% if user.is_authenticated %}
-                        <span class="text-muted small me-3">{{ user.username }}</span>
-                        <form action="{% url 'admin:logout' %}" method="post">
+                        <span class="text-muted small me-2">{{ user.username }}</span>
+                        <a href="{% url 'shop:profile' %}" class="btn btn-outline-gold btn-sm">ПРОФИЛЬ</a>
+                        <form action="{% url 'shop:logout' %}" method="post">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-outline-secondary btn-sm">ВЫХОД</button>
                         </form>
                     {% else %}
-                        <a class="btn btn-outline-gold btn-sm" href="/admin/login/">ВОЙТИ</a>
+                        <a class="btn btn-outline-gold btn-sm" href="{% url 'shop:login' %}">ВОЙТИ</a>
+                        <a class="btn btn-outline-gold btn-sm" href="{% url 'shop:register' %}">РЕГИСТРАЦИЯ</a>
                     {% endif %}
                 </div>
             </div>

@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Личный кабинет{% endblock %}
+
+{% block content %}
+<div id="profile-page" class="container mt-4">
+    <div style="display:none;">
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+    </div>
+
+    <div id="login-required" class="card p-4 text-center" style="display:none;">
+        <h3>Вы не вошли в систему</h3>
+        <p>Пожалуйста, авторизуйтесь для доступа в личный кабинет.</p>
+        <a href="{% url 'shop:login' %}" class="btn btn-outline-gold">Войти</a>
+    </div>
+
+    <div id="content" style="display:none;">
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card p-4 h-100">
+                    <h4 class="card-title mb-3 text-gold">Мой профиль</h4>
+                    <form id="profile-form">
+                        <input type="text" id="full_name" class="form-control mb-3" placeholder="ФИО" required>
+                        <input type="text" id="phone" class="form-control mb-3" placeholder="Телефон" required>
+                        <input type="email" id="email" class="form-control mb-3" placeholder="Email для чеков" required>
+                        <textarea id="address" class="form-control mb-3" placeholder="Адрес доставки" required></textarea>
+                        <input type="text" id="city" class="form-control mb-3" placeholder="Город доставки">
+                        
+                        <select id="favorite_category" class="form-control mb-3">
+                            <option value="">-- Выберите любимую категорию --</option>
+                        </select>
+
+                        <button type="submit" class="btn btn-outline-gold w-100">Сохранить изменения</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-4">
+                <div class="card p-4 h-100">
+                    <h4 class="card-title mb-3 text-gold">История заказов</h4>
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover">
+                            <thead>
+                                <tr><th>ID</th><th>Дата</th><th>Действие</th></tr>
+                            </thead>
+                            <tbody id="orders-table">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Функция для API запросов
+        async function apiFetch(url, options = {}) {
+            options.headers = options.headers || {};
+            options.headers['Content-Type'] = 'application/json';
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+            if (csrftoken) options.headers['X-CSRFToken'] = csrftoken;
+
+            const response = await fetch(url, options);
+            if (response.status === 401 || response.status === 403) {
+                document.getElementById('login-required').style.display = 'block';
+                document.getElementById('content').style.display = 'none';
+                throw new Error('Требуется авторизация');
+            }
+            if (!response.ok) throw new Error('Ошибка сервера');
+            return response.json();
+        }
+
+        async function initProfile() {
+            try {
+                const [categories, profileData] = await Promise.all([
+                    fetch('/api/categories/').then(res => res.json()),
+                    apiFetch('/api/me/')
+                ]);
+
+                // Заполнение категорий
+                const select = document.getElementById('favorite_category');
+                categories.forEach(cat => {
+                    const opt = new Option(cat.name, cat.id);
+                    if (cat.id == profileData.favorite_category) opt.selected = true;
+                    select.add(opt);
+                });
+
+                // Заполнение данных
+                document.getElementById('full_name').value = profileData.full_name || '';
+                document.getElementById('phone').value = profileData.phone || '';
+                document.getElementById('address').value = profileData.address || '';
+                document.getElementById('email').value = profileData.email_for_receipt || '';
+                document.getElementById('city').value = profileData.city || '';
+
+                document.getElementById('content').style.display = 'block';
+                
+                // Загрузка заказов
+                const orders = await apiFetch('/api/orders/');
+                const tbody = document.getElementById('orders-table');
+                tbody.innerHTML = orders.length ? '' : '<tr><td colspan="3">Заказов пока нет</td></tr>';
+                orders.forEach(o => {
+                    tbody.innerHTML += `<tr>
+                        <td>#${o.id}</td>
+                        <td>${new Date(o.created_at).toLocaleDateString()}</td>
+                        <td><button class="btn btn-sm btn-outline-secondary">Детали</button></td>
+                    </tr>`;
+                });
+            } catch (err) {
+                console.error(err);
+                document.getElementById('login-required').style.display = 'block';
+            }
+        }
+
+        document.getElementById('profile-form').onsubmit = async (e) => {
+            e.preventDefault();
+            try {
+                await apiFetch('/api/me/', {
+                    method: 'PATCH',
+                    body: JSON.stringify({
+                        full_name: document.getElementById('full_name').value,
+                        phone: document.getElementById('phone').value,
+                        address: document.getElementById('address').value,
+                        email_for_receipt: document.getElementById('email').value,
+                        city: document.getElementById('city').value,
+                        favorite_category: document.getElementById('favorite_category').value
+                    })
+                });
+                alert('Профиль обновлен!');
+            } catch (err) { alert(err.message); }
+        };
+
+        initProfile();
+    });
+</script>
+{% endblock %}
