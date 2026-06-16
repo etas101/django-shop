@@ -1,148 +1,57 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{ product.name }}</title>
-    <style>
-    /* Подключаем современный шрифт */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+{% extends 'base.html' %}
+{% load static %}
 
-    body { 
-        font-family: 'Inter', sans-serif; 
-        margin: 0; 
-        padding: 40px 20px; 
-        background: #f8fafc;
-        color: #1e293b;
-    }
+{% block title %}{{ product.name }} | PetStore{% endblock %}
 
-    .container { 
-        max-width: 1000px; 
-        margin: 0 auto; 
-        background: white; 
-        padding: 40px; 
-        border-radius: 20px;
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-    }
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-5">
+        <ol class="breadcrumb text-uppercase small">
+            <li class="breadcrumb-item"><a href="{% url 'shop:home' %}" class="text-info text-decoration-none">ГЛАВНАЯ</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'shop:catalog' %}" class="text-info text-decoration-none">КАТАЛОГ</a></li>
+            <li class="breadcrumb-item active text-secondary" aria-current="page">{{ product.name|upper }}</li>
+        </ol>
+    </nav>
 
-    .back-link { 
-        display: inline-flex;
-        align-items: center;
-        margin-bottom: 30px; 
-        color: #64748b; 
-        text-decoration: none;
-        font-weight: 500;
-        transition: color 0.2s;
-    }
+    <div class="row g-5">
+        <div class="col-md-6">
+            <div class="card bg-dark border border-secondary rounded-0 p-3">
+                {% if product.photo %}
+                    <img src="{{ product.photo.url }}" class="card-img-top" alt="{{ product.name }}">
+                {% else %}
+                    <div class="text-center py-5 text-muted border border-secondary border-dashed">NO IMAGE AVAILABLE</div>
+                {% endif %}
+            </div>
+        </div>
 
-    .back-link:hover { color: #0f172a; }
+        <div class="col-md-6">
+            <h1 class="display-5 fw-bold text-uppercase mb-4">{{ product.name }}</h1>
 
-    /* Главная сетка: на десктопе 2 колонки, на мобилке 1 */
-    .product-detail {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 60px;
-        align-items: start;
-    }
+            <div class="mb-4 p-3 bg-dark border-start border-secondary border-2">
+                <p class="mb-1 text-light"><strong>PRODUCER:</strong> {{ product.manufacturer.name|upper }}</p>
+                <p class="mb-0 text-light"><strong>CATEGORY:</strong> {{ product.category.name|upper }}</p>
+            </div>
 
-    .product-image img { 
-        width: 100%; 
-        aspect-ratio: 1/1; /* Квадратное фото */
-        object-fit: cover;
-        border-radius: 16px; 
-        box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
-    }
+            <p class="lead text-muted mb-4">{{ product.description }}</p>
+            
+            <h2 class="text-info mb-4 display-6 fw-bold">{{ product.price }} ₽</h2>
+            
+            <div class="mb-4">
+                {% if product.stock > 0 %}
+                    <span class="badge bg-dark border border-info text-info rounded-0 px-3 py-2">В НАЛИЧИИ: {{ product.stock }} ШТ.</span>
+                {% else %}
+                    <span class="badge bg-dark border border-danger text-danger rounded-0 px-3 py-2">НЕТ В НАЛИЧИИ</span>
+                {% endif %}
+            </div>
 
-    .product-info h1 { font-size: 2.5rem; margin: 0 0 20px; color: #0f172a; }
-
-    .meta { 
-        background: #f1f5f9;
-        padding: 20px;
-        border-radius: 12px;
-        border-top: none;
-        border-bottom: none;
-        margin-bottom: 20px;
-    }
-
-    .price { 
-        color: #059669; 
-        font-size: 2.5rem; 
-        font-weight: 700;
-        margin: 20px 0;
-    }
-
-    .btn-add { 
-        display: block; 
-        width: 100%; 
-        padding: 18px; 
-        background: #0f172a; /* Темная стильная кнопка */
-        color: white; 
-        text-decoration: none; 
-        border-radius: 12px;
-        font-size: 1.1rem;
-        font-weight: 600;
-        text-align: center; 
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    }
-
-    .btn-add:hover { 
-        background: #334155; 
-        transform: translateY(-2px);
-    }
-
-    @media (max-width: 768px) {
-        .product-detail { grid-template-columns: 1fr; gap: 30px; }
-        .product-info h1 { font-size: 1.8rem; }
-    }
-</style>
-</head>
-
-<body>
-
-<div class="container">
-
-    <a href="{% url 'shop:catalog' %}" class="back-link">
-        ← Назад к каталогу
-    </a>
-
-    <div class="product-detail">
-
-        <!-- 📸 фото -->
-        <div class="product-image">
-            {% if product.photo %}
-                <img src="{{ product.photo.url }}" alt="{{ product.name }}">
+            {% if product.stock > 0 %}
+                <a href="{% url 'shop:add_to_cart' product.id %}" class="btn btn-info btn-lg w-100 rounded-0 text-dark fw-bold text-uppercase">
+                    ДОБАВИТЬ В КОРЗИНУ
+                </a>
             {% else %}
-                <p>Нет изображения</p>
+                <button class="btn btn-outline-secondary btn-lg w-100 rounded-0 text-uppercase" disabled>Нет в наличии</button>
             {% endif %}
         </div>
-
-        <!-- 📦 инфо -->
-        <div class="product-info">
-
-            <h1>{{ product.name }}</h1>
-
-            <div class="meta">
-                <p><strong>Категория:</strong> {{ product.category.name }}</p>
-                <p><strong>Производитель:</strong> {{ product.manufacturer.name }} ({{ product.manufacturer.country }})</p>
-            </div>
-
-            <div class="price">{{ product.price }} ₽</div>
-
-            <div class="stock">✓ На складе: {{ product.stock }} шт.</div>
-
-            <div class="description">
-                <h3>Описание:</h3>
-                <p>{{ product.description }}</p>
-            </div>
-
-            <a href="{% url 'shop:add_to_cart' product.id %}" class="btn-add">
-                🛒 Добавить в корзину
-            </a>
-
-        </div>
-
     </div>
-
 </div>
-
-</body>
-</html>
+{% endblock %}

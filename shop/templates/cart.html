@@ -1,295 +1,72 @@
-<html>
-<head>
-    <title>Корзина</title>
+{% extends 'base.html' %}
+{% load static %}
 
-    <style>
-        body {
-            font-family: Arial;
+{% block title %}Корзина | PetStore{% endblock %}
 
-
-            background: #f5f5f5;
-            margin: 0;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1100px;
-            margin: auto;
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-        }
-
-        h1 {
-            margin-bottom: 20px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            background: #2c3e50;
-            color: white;
-            padding: 12px;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            text-align: center;
-        }
-
-        td {
-            padding: 12px;
-            border-bottom: 1px solid #ddd;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            text-align: center;
-        }
-
-        .btn {
-            padding: 6px 10px;
-            border: none;
-
-
-            cursor: pointer;
-            border-radius: 5px;
-        }
-
-        .btn-update {
-            background: #3498db;
-            color: white;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        }
-
-        .btn-delete {
-            background: #e74c3c;
-            color: white;
-            text-decoration: none;
-            padding: 6px 10px;
-            border-radius: 5px;
-        }
-
-        .total {
-            text-align: right;
-            margin-top: 20px;
-            font-size: 22px;
-            font-weight: bold;
-        }
-
-        .checkout-btn {
-            display: inline-block;
-            margin-top: 20px;
-            background: #2ecc71;
-            color: white;
-            padding: 12px 25px;
-            text-decoration: none;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-        }
-
-        .messages {
-            margin-bottom: 15px;
-
-        }
-
-        .msg {
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 5px;
-        }
-
-        .success { background: #d4edda; }
-        .error { background: #f8d7da; }
-    </style>
-</head>
-
-<body>
-
-<div class="container">
-
-    <h1>🛒 Корзина</h1>
-    <div style="display:flex; justify-content: space-between; margin-bottom: 20px;">
-
-        <a href="{% url 'shop:catalog' %}" class="btn btn-update">
-            ← В каталог
-        </a>
-
-
-
-    </div>
-
+{% block content %}
+<div class="container py-5">
+    <h2 class="mb-4 border-start border-info border-4 ps-3">КОРЗИНА</h2>
 
     {% if messages %}
-        <div class="messages">
-            {% for message in messages %}
-                <div class="msg {{ message.tags }}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        </div>
+        {% for message in messages %}
+            <div class="alert alert-info rounded-0 border-0 bg-dark text-info mb-4">{{ message }}</div>
+        {% endfor %}
     {% endif %}
 
     {% if cart_items %}
+        <form method="post" action="{% url 'shop:checkout' %}">
+            {% csrf_token %}
 
-    <!-- ФОРМА checkout -->
-    <form method="post" action="{% url 'shop:checkout' %}">
-        {% csrf_token %}
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle">
+                    <thead class="border-secondary">
+                        <tr>
+                            <th>ВЫБОР</th>
+                            <th>ТОВАР</th>
+                            <th>ЦЕНА</th>
+                            <th>КОЛ-ВО</th>
+                            <th>СУММА</th>
+                            <th>ДЕЙСТВИЕ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cart_items %}
+                        <tr>
+                            <td><input type="checkbox" name="items" value="{{ item.id }}" checked class="form-check-input bg-dark border-info"></td>
+                            <td>
+                                <strong class="text-uppercase">{{ item.product.name }}</strong><br>
+                                <a href="{% url 'shop:product_detail' item.product.id %}" class="text-info text-decoration-none small">DETAILS</a>
+                            </td>
+                            <td>{{ item.product.price }} ₽</td>
+                            <td>
+                                <div class="input-group" style="width: 140px;">
+                                    <input type="number" name="quantity" class="form-control rounded-0" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}">
+                                    <button type="submit" formaction="{% url 'shop:update_cart' item.id %}" class="btn btn-outline-info rounded-0">OK</button>
+                                </div>
+                            </td>
+                            <td><strong>{{ item.total_price }} ₽</strong></td>
+                            <td>
+                                <a href="{% url 'shop:remove_from_cart' item.id %}" class="btn btn-outline-danger btn-sm rounded-0" onclick="return confirm('Удалить?')">УДАЛИТЬ</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Выбор</th>
-                    <th>Товар</th>
-                    <th>Цена</th>
-                    <th>Количество</th>
-                    <th>Сумма</th>
-                    <th>Действие</th>
-                </tr>
-            </thead>
+            <div class="my-4">
+                <input type="text" name="address" class="form-control rounded-0 p-3" placeholder="АДРЕС ДОСТАВКИ" required>
+            </div>
 
-            <tbody>
-                {% for item in cart_items %}
-                <tr>
-
-                    <!-- выбор товара -->
-                    <td>
-                        <input type="checkbox"
-                               name="items"
-                               value="{{ item.id }}"
-                               checked>
-
-
-                    </td>
-
-                    <!-- товар -->
-                    <td>
-                        {{ item.product.name }}
-                    </td>
-
-                    <!-- цена -->
-                    <td>
-                        {{ item.product.price }} ₽
-                    </td>
-
-                    <!-- количество -->
-                    <td>
-
-                        <form method="post" action="{% url 'shop:update_cart' item.id %}">
-                            {% csrf_token %}
-                            <input type="number"
-                                   name="quantity"
-                                   value="{{ item.quantity }}"
-                                   min="1"
-                                   max="{{ item.product.stock }}"
-                                   style="width:60px;">
-                            <button class="btn btn-update">OK</button>
-                        </form>
-
-                    </td>
-
-                    <!-- сумма -->
-                    <td>
-                        {{ item.product.price|floatformat:0|add:item.quantity }} ₽
-                    </td>
-
-                    <!-- удалить -->
-                    <td>
-                        <a class="btn-delete"
-                           href="{% url 'shop:remove_from_cart' item.id %}"
-                           onclick="return confirm('Удалить товар?')">
-                            Удалить
-                        </a>
-                    </td>
-                    
-
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        <!-- адрес -->
-        <div style="margin-top:20px;">
-            <input type="text"
-                   name="address"
-                   placeholder="Введите адрес доставки"
-                   required
-                   style="width:100%; padding:10px;">
-        </div>
-
-        <!-- кнопка -->
-        <button type="submit" class="checkout-btn">
-            Оформить заказ
-        </button>
-
-    </form>
-
+            <div class="text-end">
+                <button type="submit" class="btn btn-primary btn-lg rounded-0 px-5">ОФОРМИТЬ ЗАКАЗ</button>
+            </div>
+        </form>
     {% else %}
-
-        <p>Корзина пуста 😢</p>
-        <a href="{% url 'shop:catalog' %}">Перейти в каталог</a>
-
+        <div class="text-center py-5 border border-secondary border-dashed">
+            <p class="fs-4 text-muted text-uppercase">Корзина пуста</p>
+            <a href="{% url 'shop:catalog' %}" class="btn btn-outline-info rounded-0">В КАТАЛОГ</a>
+        </div>
     {% endif %}
-
 </div>
-
-</body>
-</html>
+{% endblock %}

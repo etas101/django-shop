@@ -1,102 +1,31 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Оформление заказа</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f5f5f5;
-            margin: 0;
-            padding: 30px;
-        }
+{% extends 'base.html' %}
+{% load static %}
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
+{% block title %}ОФОРМЛЕНИЕ ЗАКАЗА | PetStore{% endblock %}
 
-        h1 {
-            margin-bottom: 20px;
-            color: #2c3e50;
-        }
+{% block content %}
+<div class="container py-5">
+    <div class="card bg-dark border border-secondary p-5 rounded-0 shadow-none">
+        <h2 class="mb-4 text-uppercase border-start border-info border-4 ps-3">Оформление заказа</h2>
 
-        .form {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-        }
-
-        input {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-
-        button {
-            padding: 10px 20px;
-            background: #27ae60;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: #219150;
-        }
-
-        .order-box {
-            margin-top: 20px;
-        }
-
-        .item {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .item:last-child {
-            border-bottom: none;
-        }
-
-        .total {
-            margin-top: 20px;
-            font-size: 20px;
-            font-weight: bold;
-            text-align: right;
-        }
-    </style>
-</head>
-
-<body>
-
-<div class="container">
-
-    <h1>Оформление заказа</h1>
-
-    <form method="post" class="form">
-        {% csrf_token %}
-        <input type="text" name="address" placeholder="Адрес доставки" required>
-        <button type="submit">Подтвердить заказ</button>
-    </form>
-
-    <h2>Ваш заказ:</h2>
-
-    <div class="order-box">
-        {% for item in items %}
-            <div class="item">
-                {{ item.product.name }} —
-                {{ item.quantity }} шт —
-                {{ item.product.price }} ₽
+        <form method="post" class="mt-4">
+            {% csrf_token %}
+            
+            <div class="mb-4">
+                <label class="form-label text-muted small text-uppercase">Адрес доставки</label>
+                <input type="text" name="address" class="form-control rounded-0 bg-dark text-light border-secondary p-3" 
+                       placeholder="Введите ваш адрес..." required>
             </div>
-        {% endfor %}
+
+            <div class="alert alert-secondary rounded-0 border-0 text-muted small mb-4">
+                Проверьте данные перед подтверждением. Ваш заказ будет обработан в ближайшее время.
+            </div>
+
+            <div class="d-flex gap-3">
+                <button type="submit" class="btn btn-info rounded-0 px-5 text-dark fw-bold">ПОДТВЕРДИТЬ ЗАКАЗ</button>
+                <a href="{% url 'shop:cart' %}" class="btn btn-outline-secondary rounded-0 px-4">НАЗАД В КОРЗИНУ</a>
+            </div>
+        </form>
     </div>
-
 </div>
-
-</body>
-</html>
+{% endblock %}

@@ -1,229 +1,76 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Каталог товаров</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background: #f5f5f5;
-        }
+{% extends 'base.html' %}
+{% load static %}
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+{% block title %}КАТАЛОГ | PetStore{% endblock %}
 
-        h1 {
-            color: #2c3e50;
-        }
+{% block content %}
+<h2 class="mb-4 border-start border-info border-4 ps-3 text-uppercase">Каталог товаров</h2>
 
-        .filters {
-            background: white;
-            padding: 20px;
-            margin-bottom: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .filters form {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            align-items: end;
-        }
-
-        .filters label {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            font-weight: bold;
-            color: #34495e;
-        }
-
-        .filters input, .filters select {
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            min-width: 200px;
-        }
-
-        .filters button {
-            padding: 8px 20px;
-            background: #3498db;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .filters a {
-            padding: 8px 20px;
-            background: #95a5a6;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-        }
-
-        .products {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
-        }
-
-        .product {
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            transition: transform 0.2s;
-        }
-
-        .product:hover {
-            transform: translateY(-5px);
-        }
-
-        .product img {
-            width: 100%;
-            height: 220px;
-            object-fit: cover;
-            background: #ecf0f1;
-        }
-
-        .product-info {
-            padding: 15px;
-        }
-
-        .product h3 {
-            margin: 0 0 10px 0;
-            color: #2c3e50;
-        }
-
-        .price {
-            color: #2ecc71;
-            font-size: 22px;
-            font-weight: bold;
-            margin: 10px 0;
-        }
-
-        .stock {
-            color: #7f8c8d;
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
-
-        .btn-add {
-        display: block;
-        width: 80%;
-        margin: 10px auto 0;  /* 🔥 ЦЕНТРИРУЕТ */
-        padding: 12px;
-        background: #27ae60;
-        color: white;
-        text-align: center;
-        text-decoration: none;
-        border-radius: 4px;
-        font-weight: bold;
-    }
-
-        .btn-add:hover {
-            background: #229954;
-        }
-
-        .no-products {
-            text-align: center;
-            padding: 40px;
-            color: #7f8c8d;
-        }
-    </style>
-</head>
-
-<body>
-<div class="container">
-
-    <h1>🛍️ Каталог товаров</h1>
-
-    <!-- 🔵 ФИЛЬТРЫ -->
-    <div class="filters">
-        <form method="get">
-
-            <label>
-                Категория:
-                <select name="category">
-                    <option value="">Все</option>
-                    {% for cat in categories %}
-                        <option value="{{ cat.id }}"
-                            {% if request.GET.category == cat.id|stringformat:"s" %}selected{% endif %}>
-                            {{ cat.name }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </label>
-
-            <label>
-                Производитель:
-                <select name="manufacturer">
-                    <option value="">Все</option>
-                    {% for man in manufacturers %}
-                        <option value="{{ man.id }}"
-                            {% if request.GET.manufacturer == man.id|stringformat:"s" %}selected{% endif %}>
-                            {{ man.name }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </label>
-
-            <label>
-                Поиск:
-                <input type="text" name="search" value="{{ request.GET.search }}">
-            </label>
-
-            <button type="submit">Фильтр</button>
-            <a href="{% url 'shop:catalog' %}">Сброс</a>
-
-        </form>
+{% if messages %}
+    <div class="mb-4">
+        {% for message in messages %}
+            <div class="alert alert-info rounded-0 bg-dark border-info text-info">{{ message }}</div>
+        {% endfor %}
     </div>
+{% endif %}
 
-    <!-- 🔥 ТОВАРЫ -->
-    <div class="products">
+<div class="card bg-dark border border-secondary p-4 mb-5 rounded-0">
+    <form method="get" class="row g-3 align-items-end">
+        <div class="col-md-3">
+            <label class="form-label text-muted small text-uppercase">Категория</label>
+            <select name="category" class="form-select rounded-0 bg-dark text-light border-secondary">
+                <option value="">Все</option>
+                {% for cat in categories %}
+                    <option value="{{ cat.id }}" {% if request.GET.category == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label text-muted small text-uppercase">Производитель</label>
+            <select name="manufacturer" class="form-select rounded-0 bg-dark text-light border-secondary">
+                <option value="">Все</option>
+                {% for man in manufacturers %}
+                    <option value="{{ man.id }}" {% if request.GET.manufacturer == man.id|stringformat:"s" %}selected{% endif %}>{{ man.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label text-muted small text-uppercase">Поиск</label>
+            <input type="text" name="search" class="form-control rounded-0 bg-dark text-light border-secondary" value="{{ request.GET.search|default:'' }}" placeholder="Название...">
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-outline-info w-100 rounded-0">ПРИМЕНИТЬ</button>
+        </div>
+    </form>
+</div>
 
-        {% for product in products %}
-        <div class="product">
-
-            <!-- 📸 КАРТИНКА -->
-            {% if product.photo %}
-                <img src="{{ product.photo.url }}" alt="{{ product.name }}">
-            {% else %}
-                <img src="https://via.placeholder.com/300x220" alt="no image">
-            {% endif %}
-
-            <div class="product-info">
-
-                <h3>{{ product.name }}</h3>
-
-                <p style="color:#7f8c8d; font-size:14px;">
-                    {{ product.category.name }} | {{ product.manufacturer.name }}
-                </p>
-
-                <div class="price">{{ product.price }} ₽</div>
-
-                <div class="stock">На складе: {{ product.stock }} шт.</div>
-
-                <a href="{% url 'shop:add_to_cart' product.id %}" class="btn-add">
-                    🛒 Добавить в корзину
-                </a>
-
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for product in products %}
+        <div class="col">
+            <div class="card h-100 bg-dark border border-secondary rounded-0 shadow-none">
+                {% if product.photo %}
+                    <img src="{{ product.photo.url }}" class="card-img-top p-3" style="height: 200px; object-fit: contain;" alt="{{ product.name }}">
+                {% else %}
+                    <div class="text-center p-5 text-muted border-bottom border-secondary">NO PHOTO</div>
+                {% endif %}
+                
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title text-info fw-bold text-uppercase">{{ product.name }}</h5>
+                    <p class="text-muted small">{{ product.category.name }} / {{ product.manufacturer.name }}</p>
+                    <h4 class="text-light mt-auto mb-3">{{ product.price }} ₽</h4>
+                    <p class="small text-secondary">В НАЛИЧИИ: {{ product.stock }}</p>
+                    
+                    <div class="mt-2">
+                        <a href="{% url 'shop:product_detail' product.id %}" class="btn btn-outline-secondary w-100 mb-2 rounded-0">ПОДРОБНЕЕ</a>
+                        <a href="{% url 'shop:add_to_cart' product.id %}" class="btn btn-info w-100 rounded-0 text-dark fw-bold">В КОРЗИНУ</a>
+                    </div>
+                </div>
             </div>
         </div>
-
-        {% empty %}
-        <div class="no-products">
-            😕 Товары не найдены
+    {% empty %}
+        <div class="col-12 text-center py-5 border border-secondary border-dashed">
+            <h4 class="text-muted text-uppercase">Товары не найдены</h4>
         </div>
-        {% endfor %}
-
-    </div>
-
+    {% endfor %}
 </div>
-</body>
-</html>
+{% endblock %}

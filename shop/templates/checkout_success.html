@@ -1,52 +1,24 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Заказ оформлен</title>
+{% extends 'base.html' %}
+{% load static %}
 
-    <style>
-        body {
-            font-family: Arial;
-            background: #f5f5f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
+{% block title %}ЗАКАЗ ОФОРМЛЕН | PetStore{% endblock %}
 
-        .box {
-            background: white;
-            padding: 40px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-
-        h1 {
-            color: #2ecc71;
-        }
-
-        a {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 20px;
-            background: #3498db;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-    </style>
-</head>
-
-<body>
-
-<div class="box">
-    <h1>✅ Заказ успешно оформлен!</h1>
-    <p>Чек отправлен на вашу почту 📧</p>
-
-    <a href="{% url 'shop:catalog' %}">
-        Вернуться в магазин
-    </a>
+{% block content %}
+<div class="container py-5">
+    <div class="text-center py-5">
+        <div class="card bg-dark border border-secondary p-5 rounded-0 mx-auto" style="max-width: 500px;">
+            <h1 class="text-info mb-4 text-uppercase fw-bold">ЗАКАЗ ПРИНЯТ</h1>
+            
+            <div class="my-4">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+            </div>
+            
+            <p class="text-light mb-4">ЧЕК БЫЛ ОТПРАВЛЕН НА ВАШУ ЭЛЕКТРОННУЮ ПОЧТУ.</p>
+            
+            <a href="{% url 'shop:catalog' %}" class="btn btn-outline-info rounded-0 px-4 py-2 mt-3">ВЕРНУТЬСЯ В МАГАЗИН</a>
+        </div>
+    </div>
 </div>
-
-</body>
-</html>
+{% endblock %}

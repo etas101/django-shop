@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}КАТАЛОГ | PetStore{% endblock %}
+
+{% block content %}
+<h2 class="mb-4 border-start border-info border-4 ps-3 text-uppercase">Каталог товаров</h2>
+
+<div class="row">
+    <aside class="col-md-3 mb-4">
+        <div class="card bg-dark border border-secondary p-4 rounded-0">
+            <form id="filter-form">
+                <h5 class="text-info mb-3">ФИЛЬТРЫ</h5>
+                <div class="mb-4">
+                    <label class="form-label text-muted small text-uppercase">Поиск</label>
+                    <input type="text" id="search-input" class="form-control rounded-0" placeholder="Название...">
+                </div>
+                <button type="submit" class="btn btn-outline-info w-100 rounded-0">ПРИМЕНИТЬ</button>
+            </form>
+        </div>
+    </aside>
+
+    <main class="col-md-9">
+        <div id="loading-spinner" class="text-center my-5 d-none">
+            <div class="spinner-border text-info" role="status">
+                <span class="visually-hidden">Загрузка...</span>
+            </div>
+        </div>
+
+        <div id="product-list" class="row"></div>
+    </main>
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3" id="toast-container"></div>
+
+{% endblock %}
+
+{% block scripts %}
+    {% csrf_token %}
+    <script src="{% static 'js/main.js' %}"></script>
+{% endblock %}

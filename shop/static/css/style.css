@@ -1,0 +1,71 @@
+:root {
+    --bg-main: #0f0a15;       /* Темный фон GiftFlow */
+    --card-bg: #1a0b2e;       /* Глубокий фиолетовый */
+    --accent: #d4af37;        /* Золотой акцент */
+    --text-main: #ffffff;     /* Белый текст */
+    --radius-card: 30px;      /* Еще больше мягкости */
+    --radius-btn: 20px;
+    --shadow-gift: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+}
+
+/* Карточки: премиальный вид с золотой обводкой */
+.card {
+    background: var(--card-bg);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-gift);
+    transition: all 0.4s ease;
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    border-color: var(--accent);
+    box-shadow: 0 15px 40px rgba(212, 175, 55, 0.15);
+}
+
+/* Кнопки: золотой стиль */
+.btn {
+    border-radius: var(--radius-btn) !important;
+    padding: 12px 24px;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.btn-primary {
+    background: var(--accent);
+    border: none;
+    color: #000;
+}
+
+.btn-primary:hover {
+    background: #f4c430;
+    color: #000;
+}
+
+/* Поля ввода: светящийся фокус */
+.form-control, .form-select {
+    border-radius: 16px;
+    background: #1a0b2e;
+    border: 1px solid #332244;
+    color: white;
+    padding: 14px;
+}
+
+.form-control:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
+    background: #231238;
+    color: white;
+}
+
+/* Заголовки */
+h1, h2, h3 {
+    color: var(--accent);
+    letter-spacing: -0.5px;
+}
