@@ -10,16 +10,19 @@ from .views import (
     CartViewSet,
     CartItemViewSet
 )
+
 from .views import MeView
 from .views import OrderViewSet
-app_name = 'shop'  # ← Это оставляем, это важно!
+app_name = 'shop'  
 router = DefaultRouter()
+
 router.register(r'products', ProductViewSet)
 router.register(r'categories', CategoryViewSet)
 router.register(r'manufacturers', ManufacturerViewSet)
 router.register(r'cart', CartViewSet)
 router.register(r'cart-items', CartItemViewSet)
 router.register(r'orders', OrderViewSet)
+
 urlpatterns = [
     path('', views.home, name='home'),
     path('author/', views.author, name='author'),
@@ -31,11 +34,9 @@ urlpatterns = [
     path('cart/update/<int:item_id>/', views.update_cart, name='update_cart'),
     path('cart/remove/<int:item_id>/', views.remove_from_cart, name='remove_from_cart'),
     path('checkout/', views.checkout, name='checkout'),
-    # Авторизация
-    path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('checkout/success/', views.checkout_success, name='checkout_success'),
-    path('api/', include(router.urls)),path('register/', views.register_view, name='register'),
+    path('api/', include(router.urls)),
+    path('register/', views.register_view, name='register'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     path("api/me/", MeView.as_view()), 
@@ -44,5 +45,6 @@ urlpatterns = [
     
     path('profile/', views.profile_view, name='profile'),
     path('products/<int:pk>/', views.product_detail, name='product_detail'),
+    
+    
 ]
-# ← Убери отсюда весь код со static(...) если он там есть!
