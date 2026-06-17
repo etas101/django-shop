@@ -157,22 +157,18 @@ def about(request):
 # AUTH
 # =========================
 
-from django.contrib.auth.forms import UserCreationForm
-from django.shortcuts import render, redirect
-from django.contrib import messages
-
-def register(request):
+def register_view(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = RegistrationForm(request.POST)
         if form.is_valid():
-            form.save()
-            messages.success(request, 'Аккаунт создан!')
-            return redirect('shop:login')
-        else:
-            # Если форма невалидна, выводим ошибки в консоль
-            print(form.errors) 
+            user = form.save(commit=False)
+            user.set_password(form.cleaned_data['password'])
+            user.save()
+            login(request, user)
+            return redirect('shop:home')
     else:
-        form = UserCreationForm()
+        form = RegistrationForm()
+
     return render(request, 'register.html', {'form': form})
 
 
@@ -377,13 +373,12 @@ def checkout(request):
     return redirect("shop:home") # Или на страницу успеха
 from django.shortcuts import redirect, get_object_or_404
 from .models import CartItem # Импортируйте вашу модель корзины
-@login_required
+
 def remove_from_cart(request, item_id):
-    # Добавляем фильтрацию по текущему пользователю
-    item = get_object_or_404(CartItem, id=item_id, cart__user=request.user)
+    item = get_object_or_404(CartItem, id=item_id)
     item.delete()
-    messages.success(request, "Товар удален из корзины")
-    return redirect('shop:cart')
+    return redirect('shop:cart') # Перенаправляем обратно в корзину
+from django.shortcuts import render
 
 def checkout_success(request):
     return render(request, 'checkout_success.html') 
