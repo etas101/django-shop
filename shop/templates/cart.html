@@ -1,63 +1,56 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Корзина | PetStore{% endblock %}
+{% block title %}Корзина | GiftFlow{% endblock %}
 
 {% block content %}
 <div class="container py-5">
     <h2 class="mb-4 border-start border-info border-4 ps-3">КОРЗИНА</h2>
 
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-info rounded-0 border-0 bg-dark text-info mb-4">{{ message }}</div>
-        {% endfor %}
-    {% endif %}
-
     {% if cart_items %}
-        <form method="post" action="{% url 'shop:checkout' %}">
+        <div class="table-responsive">
+            <table class="table table-dark table-hover align-middle">
+                <thead class="border-secondary">
+                    <tr>
+                        <th>ТОВАР</th>
+                        <th>ЦЕНА</th>
+                        <th>КОЛ-ВО</th>
+                        <th>СУММА</th>
+                        <th>ДЕЙСТВИЕ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart_items %}
+                    <tr>
+                        <td>
+                            <strong class="text-uppercase">{{ item.product.name }}</strong>
+                        </td>
+                        <td>{{ item.product.price }} ₽</td>
+                        <td>
+                            <form method="post" action="{% url 'shop:update_cart' item.id %}" class="input-group" style="width: 140px;">
+                                {% csrf_token %}
+                                <input type="number" name="quantity" class="form-control rounded-0" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}">
+                                <button type="submit" class="btn btn-outline-info rounded-0">OK</button>
+                            </form>
+                        </td>
+                        <td><strong>{{ item.item_total_price }} ₽</strong></td>
+                        <td>
+                            <a href="{% url 'shop:remove_from_cart' item.id %}" class="btn btn-outline-danger btn-sm rounded-0">УДАЛИТЬ</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <form method="post" action="{% url 'shop:checkout' %}" class="mt-4 border-top pt-4">
             {% csrf_token %}
-
-            <div class="table-responsive">
-                <table class="table table-dark table-hover align-middle">
-                    <thead class="border-secondary">
-                        <tr>
-                            <th>ВЫБОР</th>
-                            <th>ТОВАР</th>
-                            <th>ЦЕНА</th>
-                            <th>КОЛ-ВО</th>
-                            <th>СУММА</th>
-                            <th>ДЕЙСТВИЕ</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in cart_items %}
-                        <tr>
-                            <td><input type="checkbox" name="items" value="{{ item.id }}" checked class="form-check-input bg-dark border-info"></td>
-                            <td>
-                                <strong class="text-uppercase">{{ item.product.name }}</strong><br>
-                                <a href="{% url 'shop:product_detail' item.product.id %}" class="text-info text-decoration-none small">DETAILS</a>
-                            </td>
-                            <td>{{ item.product.price }} ₽</td>
-                            <td>
-                                <div class="input-group" style="width: 140px;">
-                                    <input type="number" name="quantity" class="form-control rounded-0" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}">
-                                    <button type="submit" formaction="{% url 'shop:update_cart' item.id %}" class="btn btn-outline-info rounded-0">OK</button>
-                                </div>
-                            </td>
-                            <td><strong>{{ item.total_price }} ₽</strong></td>
-                            <td>
-                                <a href="{% url 'shop:remove_from_cart' item.id %}" class="btn btn-outline-danger btn-sm rounded-0" onclick="return confirm('Удалить?')">УДАЛИТЬ</a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="my-4">
+            <div class="mb-3">
                 <input type="text" name="address" class="form-control rounded-0 p-3" placeholder="АДРЕС ДОСТАВКИ" required>
             </div>
-
+            <div class="mb-3">
+                <input type="text" name="phone" class="form-control rounded-0 p-3" placeholder="ТЕЛЕФОН" required>
+            </div>
             <div class="text-end">
                 <button type="submit" class="btn btn-primary btn-lg rounded-0 px-5">ОФОРМИТЬ ЗАКАЗ</button>
             </div>
@@ -65,7 +58,7 @@
     {% else %}
         <div class="text-center py-5 border border-secondary border-dashed">
             <p class="fs-4 text-muted text-uppercase">Корзина пуста</p>
-            <a href="{% url 'shop:catalog' %}" class="btn btn-outline-info rounded-0">В КАТАЛОГ</a>
+            <a href="{% url 'shop:product_list' %}" class="btn btn-outline-info rounded-0">В КАТАЛОГ</a>
         </div>
     {% endif %}
 </div>
