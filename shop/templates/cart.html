@@ -7,52 +7,61 @@
 <div class="container py-5">
     <h2 class="mb-4 border-start border-info border-4 ps-3">КОРЗИНА</h2>
 
-    {% if cart_items %}
-        <div class="table-responsive">
-            <table class="table table-dark table-hover align-middle">
-                <thead class="border-secondary">
-                    <tr>
-                        <th>ТОВАР</th>
-                        <th>ЦЕНА</th>
-                        <th>КОЛ-ВО</th>
-                        <th>СУММА</th>
-                        <th>ДЕЙСТВИЕ</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in cart_items %}
-                    <tr>
-                        <td>
-                            <strong class="text-uppercase">{{ item.product.name }}</strong>
-                        </td>
-                        <td>{{ item.product.price }} ₽</td>
-                        <td>
-                            <form method="post" action="{% url 'shop:update_cart' item.id %}" class="input-group" style="width: 140px;">
-                                {% csrf_token %}
-                                <input type="number" name="quantity" class="form-control rounded-0" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}">
-                                <button type="submit" class="btn btn-outline-info rounded-0">OK</button>
-                            </form>
-                        </td>
-                        <td><strong>{{ item.item_total_price }} ₽</strong></td>
-                        <td>
-                            <a href="{% url 'shop:remove_from_cart' item.id %}" class="btn btn-outline-danger btn-sm rounded-0">УДАЛИТЬ</a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+    {% if messages %}
+        <div class="messages mb-4">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
         </div>
+    {% endif %}
 
-        <form method="post" action="{% url 'shop:checkout' %}" class="mt-4 border-top pt-4">
+    {% if cart_items %}
+        <form method="post" action="{% url 'shop:checkout' %}">
             {% csrf_token %}
-            <div class="mb-3">
-                <input type="text" name="address" class="form-control rounded-0 p-3" placeholder="АДРЕС ДОСТАВКИ" required>
+
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle">
+                    <thead class="border-secondary">
+                        <tr>
+                            <th>ВЫБОР</th> <th>ТОВАР</th>
+                            <th>ЦЕНА</th>
+                            <th>КОЛ-ВО</th>
+                            <th>СУММА</th>
+                            <th>ДЕЙСТВИЕ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cart_items %}
+                        <tr>
+                            <td><input type="checkbox" name="items" value="{{ item.id }}" checked></td>
+                            
+                            <td>
+                                <strong class="text-uppercase">{{ item.product.name }}</strong>
+                            </td>
+                            <td>{{ item.product.price }} ₽</td>
+                            <td>
+                                <div class="input-group" style="width: 140px;">
+                                    <input type="number" name="quantity" class="form-control rounded-0" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}">
+                                    <button type="submit" formaction="{% url 'shop:update_cart' item.id %}" class="btn btn-outline-info rounded-0">OK</button>
+                                </div>
+                            </td>
+                            <td><strong>{{ item.item_total_price }} ₽</strong></td>
+                            <td>
+                                <a href="{% url 'shop:remove_from_cart' item.id %}" class="btn btn-outline-danger btn-sm rounded-0" onclick="return confirm('Удалить товар?')">УДАЛИТЬ</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
-            <div class="mb-3">
-                <input type="text" name="phone" class="form-control rounded-0 p-3" placeholder="ТЕЛЕФОН" required>
-            </div>
-            <div class="text-end">
-                <button type="submit" class="btn btn-primary btn-lg rounded-0 px-5">ОФОРМИТЬ ЗАКАЗ</button>
+
+            <div class="mt-4 border-top pt-4">
+                <div class="mb-3">
+                    <input type="text" name="address" class="form-control rounded-0 p-3" placeholder="АДРЕС ДОСТАВКИ" required>
+                </div>
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary btn-lg rounded-0 px-5">ОФОРМИТЬ ЗАКАЗ</button>
+                </div>
             </div>
         </form>
     {% else %}
