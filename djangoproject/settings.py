@@ -29,8 +29,12 @@ SECRET_KEY = 'django-insecure-2-c#3#@x0y)8)y-4l_jtgh(g!gru)b#g3g=t^9q7++2cnqwiy6
 DEBUG = config('DEBUG', default=False, cast=bool)
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,localhost').split(',')
 ALLOWED_HOSTS.append('.up.railway.app')
-CSRF_TRUSTED_ORIGINS = ['https://web-production-02250.up.railway.app']
+# settings.py
 
+# Добавьте ваш домен в этот список
+CSRF_TRUSTED_ORIGINS = [
+    'https://django-shop-production.up.railway.app',
+]
 # Application definition
 
 INSTALLED_APPS = [
