@@ -149,7 +149,9 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 # Настройка для Resend (вместо SMTP)
 RESEND_API_KEY = config('RESEND_API_KEY')
-
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
